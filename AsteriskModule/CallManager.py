@@ -27,18 +27,22 @@ class CallManager:
 
     def get_queue_status(self, queue):
         try:
-            queueDict = {}
+            queueDict = []
+            queueIndex = 0
             self.tn.write(b"Action: QueueStatus\r\n\r\n")
             self.tn.read_until(b"Message: Queue status will follow\r\n\r\n", 10)
             data = self.tn.read_until(b"Event: QueueStatusComplete", 10).decode().split("\r\n\r\n")
             for block in data:
                 lines = block.splitlines()
-                if lines[0] == "Event: QueueParams" and lines[1] == "Queue: " + queue:
+                if len(lines) >= 2 and lines[1] == "Queue: " + queue:
+                    queueDict.append({})
+                    queueDict[queueIndex]["Event"] = lines[0].split(": ")[1]
                     lines.pop(0)
                     for line in lines:
                         line = line.split(": ")
-                        queueDict[line[0]] = line[1]
-                    return queueDict
+                        queueDict[queueIndex][line[0]] = line[1]
+                    queueIndex += 1
+            return queueDict
         except OSError:
             print("ERROR callManager:connection closed")
         except EOFError:
