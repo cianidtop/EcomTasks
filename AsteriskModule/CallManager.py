@@ -52,12 +52,12 @@ class CallManager:
         try:
             callsDict = []
             self.tn.write(b"Action: Command\r\nCommand: sip show channels\r\n\r\n")
+            self.tn.read_until(b"Response: Follows\r\n", 10)
             data = self.tn.read_until(b"END COMMAND", 10).decode().split("\r\n\r\n")
             for block in data:
                 lines = block.splitlines()
-                print(lines)
-                if lines[0] == 'Response: Follows':
-                    for i in range(3, len(data)-2):
+                if lines[0] == 'Privilege: Command':
+                    for i in range(2, len(data)-2):
                         parts = data[i].split()
                         callsDict.append({})
                         callsDict[i]["Peer1"] = parts[0]
