@@ -21,7 +21,9 @@ class CallManager:
 
     def ping(self):
         try:
-            self.tn.write(b"Action: Ping\r\n\r\n")
+            self.tn.write(b"Action:Ping\r\n\r\n")
+            self.tn.read_until(b"Timestamp")
+            return float(self.tn.read_until(b"\r\n")[2:-4].decode())
         except OSError:
             print("ERROR callManager:connection closed")
 
