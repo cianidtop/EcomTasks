@@ -184,7 +184,6 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             if is_insert:
                 try:
                     if len(arr_insert_queueStatuses_clickhouse) > 0:
-                        print(arr_insert_queueMembers_clickhouse,arr_insert_queueStatuses_clickhouse)
                         clickhouse_client.execute(
                             'INSERT INTO sandbox.telephonyQueueStatuses (batchID, externalPhoneNumber, queuePosition, queuingTime) VALUES',
                             arr_insert_queueStatuses_clickhouse)
