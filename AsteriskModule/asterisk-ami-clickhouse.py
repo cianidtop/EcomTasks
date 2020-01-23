@@ -1,5 +1,3 @@
-# import asyncio
-# from panoramisk import Manager
 import time
 import re
 import datetime
@@ -17,8 +15,7 @@ def write_to_log(text):
 
 
 def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret):
-    manager = CallManager(host=ami_host, port=ami_port,
-                        username=ami_username, secret=ami_secret)
+    manager = CallManager(ami_host,ami_port,ami_username,ami_secret)
 
 
     prev_arr_insert_queueMembers = []
@@ -36,7 +33,7 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
 
 
         try:
-            max_batch_id_clickhouse = clickhouse_client.execute('SELECT max(batchID) from datamart.telephonyQueueMembers')[0][0]
+            max_batch_id_clickhouse = clickhouse_client.execute('SELECT max(batchID) from sandbox.telephonyQueueMembers')[0][0]
         except:
             continue
 
@@ -51,11 +48,11 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             log_dict['sipShowChannelsResult'] = str(channels_details)
             log_arr = []
             log_arr.append(log_dict)
-            clickhouse_client.execute('INSERT INTO logs.asteriskLog '
-                                      '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
+            # clickhouse_client.execute('INSERT INTO logs.asteriskLog '
+            #                           '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
         except:
             try:
-                yield from manager.ping()
+                manager.ping()
             except:
                 pass
             continue
@@ -81,14 +78,13 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
                 #
                 # if ('Tx' in formatted_call or 'Rx' in formatted_call) and formatted_call[1].isdigit():
                 #     calls_dict[formatted_call[1]] = ('Incoming' if 'Tx' in formatted_call else 'Outcoming')
-                calls_dict[call['User/ANR']] = ('Incoming' if call['Last_Message'].split(':')[0] == 'Tx' else 'Outcoming')
+                if call['Last_Message'].split(':')[0] == 'Tx' or 'Rx' and call['User/ANR'].isdigit():
+                    calls_dict[call['User/ANR']] = ('Incoming' if call['Last_Message'].split(':')[0] == 'Tx' else 'Outcoming')
 
 
-            for member in queues_details:
-                member_dict = dict(member)
+            for member_dict in queues_details:
 
-                if member_dict.get('Response') != None or member_dict.get('Event') == \
-                        'QueueParams' or member_dict.get('Event') == 'QueueStatusComplete':
+                if  member_dict.get('Event') == 'QueueParams':
                     continue
                 else:
                     if counter_states < len(prev_arr_insert_queueMembers) and len(prev_arr_insert_queueMembers) > 0:
@@ -128,7 +124,7 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
 
                         arr_insert_queueStatuses.append(current_call_in_queue)
                         current_call_in_queue_clickhouse = current_call_in_queue.copy()
-                        #current_call_in_queue_clickhouse['batchID'] = max_batch_id_clickhouse + 1
+                        current_call_in_queue_clickhouse['batchID'] = max_batch_id_clickhouse + 1
                         del current_call_in_queue_clickhouse['Uniqueid']
                         arr_insert_queueStatuses_clickhouse.append(current_call_in_queue_clickhouse)
 
@@ -166,7 +162,7 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
                         arr_insert_queueMembers.append(current_queue_member)
 
                         current_queue_member_clickhouse = current_queue_member.copy()
-                        #current_queue_member_clickhouse['batchID'] = max_batch_id_clickhouse + 1
+                        current_queue_member_clickhouse['batchID'] = max_batch_id_clickhouse + 1
                         arr_insert_queueMembers_clickhouse.append(current_queue_member_clickhouse)
 
             is_insert = False
@@ -188,10 +184,11 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             if is_insert:
                 try:
                     if len(arr_insert_queueStatuses_clickhouse) > 0:
+                        print(arr_insert_queueMembers_clickhouse,arr_insert_queueStatuses_clickhouse)
                         clickhouse_client.execute(
-                            'INSERT INTO datamart.telephonyQueueStatuses (batchID, externalPhoneNumber, queuePosition, queuingTime) VALUES',
+                            'INSERT INTO sandbox.telephonyQueueStatuses (batchID, externalPhoneNumber, queuePosition, queuingTime) VALUES',
                             arr_insert_queueStatuses_clickhouse)
-                    clickhouse_client.execute('INSERT INTO datamart.telephonyQueueMembers (batchID, memberName, internalPhoneNumber, countTakenCalls, dateLastCall, statusID, isPaused, pausedReason, dateLastEvent, callType) VALUES', arr_insert_queueMembers_clickhouse)
+                    clickhouse_client.execute('INSERT INTO sandbox.telephonyQueueMembers (batchID, memberName, internalPhoneNumber, countTakenCalls, dateLastCall, statusID, isPaused, pausedReason, dateLastEvent, callType) VALUES', arr_insert_queueMembers_clickhouse)
                 except:
                     continue
 
@@ -206,27 +203,31 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
         manager.close()
 
 
+
 def main():
-    db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
-    ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
+    # db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
+    # ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
+    #
+    # cfg = ConfigParser()
+    # cfg.read(db_config_path)
+    #
+    # ch_host = cfg.get("dwh_clickhouse", "host")
+    # ch_user = cfg.get("dwh_clickhouse", "user")
+    # ch_password = cfg.get("dwh_clickhouse", "password")
 
-    cfg = ConfigParser()
-    cfg.read(db_config_path)
+    clickhouse_client = Client('172.30.200.27', user='EgorFokin', password='1zNYUd@MjC!N', database='sandbox')
 
-    ch_host = cfg.get("dwh_clickhouse", "host")
-    ch_user = cfg.get("dwh_clickhouse", "user")
-    ch_password = cfg.get("dwh_clickhouse", "password")
+    # cfg.read(ami_config_path)
+    # ami_host = cfg.get("asterisk-ami", "host")
+    # ami_port = cfg.get("asterisk-ami", "port")
+    # ami_username = cfg.get("asterisk-ami", "username")
+    # ami_secret = cfg.get("asterisk-ami", "secret")
 
-    clickhouse_client = Client(ch_host, user=ch_user, password=ch_password, database='datamart')
-
-    cfg.read(ami_config_path)
-    ami_host = cfg.get("asterisk-ami", "host")
-    ami_port = cfg.get("asterisk-ami", "port")
-    ami_username = cfg.get("asterisk-ami", "username")
-    ami_secret = cfg.get("asterisk-ami", "secret")
-
+    ami_host = '172.16.130.2'
+    ami_port = '5038'
+    ami_username = 'for_outsource'
+    ami_secret = 'L0f8AbJ01853d4ef03b83577c35bedZo'
     queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret)
-
 
 
 if __name__ == '__main__':

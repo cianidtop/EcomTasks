@@ -6,8 +6,8 @@ class CallManager:
     def __init__(self,host, port, username, secret):
         self.username = username.encode('ascii')
         self.secret = secret.encode('ascii')
-        self.host = host.encode('ascii')
-        self.port = port.encode('ascii')
+        self.host = host
+        self.port = port
         self.tn = telnetlib.Telnet()
         self.queue_status = {}
         self.channel_status = []
@@ -58,7 +58,7 @@ class CallManager:
 
     def get_queue_status(self, queue):
         self.update_queue_status()
-        return self.queue_status#[queue]
+        return self.queue_status[queue]
 
     def get_channels_status(self):
         self.update_channels_status()
