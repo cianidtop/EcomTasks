@@ -48,8 +48,8 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             log_dict['sipShowChannelsResult'] = str(channels_details)
             log_arr = []
             log_arr.append(log_dict)
-            # clickhouse_client.execute('INSERT INTO logs.asteriskLog '
-            #                           '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
+            clickhouse_client.execute('INSERT INTO logs.asteriskLog '
+                                      '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
         except:
             try:
                 manager.ping()
@@ -68,18 +68,10 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             counter_states_calls = 0
 
             #insert_string = ''
-
-            # channels_details = channels_details['content'].replace('\n', '#')
-            # channels_details = channels_details.split('#')
             calls_dict = {}
             for call in channels_details:
-                # formatted_call = re.sub(r'\s+', ' ', call)
-                # formatted_call = formatted_call.replace(':', '').split(' ')
-                #
-                # if ('Tx' in formatted_call or 'Rx' in formatted_call) and formatted_call[1].isdigit():
-                #     calls_dict[formatted_call[1]] = ('Incoming' if 'Tx' in formatted_call else 'Outcoming')
-                if call['Last_Message'].split(':')[0] == 'Tx' or 'Rx' and call['User/ANR'].isdigit():
-                    calls_dict[call['User/ANR']] = ('Incoming' if call['Last_Message'].split(':')[0] == 'Tx' else 'Outcoming')
+                if 'Tx' or 'Rx' in call['Last_Message'] and call['User/ANR'].isdigit():
+                    calls_dict[call['User/ANR']] = ('Incoming' if 'Tx' in call['Last_Message'] else 'Outcoming')
 
 
             for member_dict in queues_details:
@@ -204,28 +196,23 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
 
 
 def main():
-    # db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
-    # ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
-    #
-    # cfg = ConfigParser()
-    # cfg.read(db_config_path)
-    #
-    # ch_host = cfg.get("dwh_clickhouse", "host")
-    # ch_user = cfg.get("dwh_clickhouse", "user")
-    # ch_password = cfg.get("dwh_clickhouse", "password")
+    db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
+    ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
 
-    clickhouse_client = Client('172.30.200.27', user='EgorFokin', password='1zNYUd@MjC!N', database='sandbox')
+    cfg = ConfigParser()
+    cfg.read(db_config_path)
 
-    # cfg.read(ami_config_path)
-    # ami_host = cfg.get("asterisk-ami", "host")
-    # ami_port = cfg.get("asterisk-ami", "port")
-    # ami_username = cfg.get("asterisk-ami", "username")
-    # ami_secret = cfg.get("asterisk-ami", "secret")
+    ch_host = cfg.get("dwh_clickhouse", "host")
+    ch_user = cfg.get("dwh_clickhouse", "user")
+    ch_password = cfg.get("dwh_clickhouse", "password")
 
-    ami_host = '172.16.130.2'
-    ami_port = '5038'
-    ami_username = 'for_outsource'
-    ami_secret = 'L0f8AbJ01853d4ef03b83577c35bedZo'
+    clickhouse_client = Client(ch_host, user=ch_user, password=ch_password, database='sandbox')
+
+    cfg.read(ami_config_path)
+    ami_host = cfg.get("asterisk-ami", "host")
+    ami_port = cfg.get("asterisk-ami", "port")
+    ami_username = cfg.get("asterisk-ami", "username")
+    ami_secret = cfg.get("asterisk-ami", "secret")
     queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret)
 
 

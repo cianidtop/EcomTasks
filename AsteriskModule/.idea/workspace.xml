@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="dd2d7ead-eaed-4c03-8787-e0c40f9de51d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CallManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/CallManager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/asterisk-ami-clickhouse.py" beforeDir="false" afterPath="$PROJECT_DIR$/asterisk-ami-clickhouse.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -193,7 +192,21 @@
       <option name="project" value="LOCAL" />
       <updated>1579613355843</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="#15">
+      <created>1579786529535</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1579786529536</updated>
+    </task>
+    <task id="LOCAL-00014" summary="#15">
+      <created>1579786544560</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1579786544560</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -222,15 +235,21 @@
     <MESSAGE value="#12" />
     <MESSAGE value="#13" />
     <MESSAGE value="#14" />
-    <option name="LAST_COMMIT_MESSAGE" value="#14" />
+    <MESSAGE value="#15" />
+    <option name="LAST_COMMIT_MESSAGE" value="#15" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/asterisk-ami-clickhouse.py</url>
-          <line>86</line>
-          <option name="timeStamp" value="10" />
+          <line>17</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/asterisk-ami-clickhouse.py</url>
+          <line>159</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
