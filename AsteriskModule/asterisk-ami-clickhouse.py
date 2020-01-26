@@ -48,8 +48,8 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
             log_dict['sipShowChannelsResult'] = str(channels_details)
             log_arr = []
             log_arr.append(log_dict)
-            clickhouse_client.execute('INSERT INTO logs.asteriskLog '
-                                      '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
+            # clickhouse_client.execute('INSERT INTO logs.asteriskLog '
+            #                           '(logDateTime, queueStatusResult, sipShowChannelsResult) VALUES', log_arr)
         except:
             try:
                 manager.ping()
