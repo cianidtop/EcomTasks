@@ -206,7 +206,21 @@
       <option name="project" value="LOCAL" />
       <updated>1579786544560</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="#16">
+      <created>1580051591495</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1580051591495</updated>
+    </task>
+    <task id="LOCAL-00016" summary="#17">
+      <created>1580051735166</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1580051735166</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,7 +250,9 @@
     <MESSAGE value="#13" />
     <MESSAGE value="#14" />
     <MESSAGE value="#15" />
-    <option name="LAST_COMMIT_MESSAGE" value="#15" />
+    <MESSAGE value="#16" />
+    <MESSAGE value="#17" />
+    <option name="LAST_COMMIT_MESSAGE" value="#17" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -248,7 +264,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/asterisk-ami-clickhouse.py</url>
-          <line>159</line>
+          <line>162</line>
           <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
