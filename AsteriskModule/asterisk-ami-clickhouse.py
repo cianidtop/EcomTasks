@@ -29,7 +29,6 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
         except:
             try:
                 manager.connect()
-                print("connection made")
             except:
                 pass
 
