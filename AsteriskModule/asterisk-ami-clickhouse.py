@@ -35,10 +35,10 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
         now = datetime.datetime.strptime(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
 
 
-        try:
-            max_batch_id_clickhouse = clickhouse_client.execute('SELECT max(batchID) from sandbox.telephonyQueueMembers')[0][0]
-        except:
-            continue
+        # try:
+        #     max_batch_id_clickhouse = clickhouse_client.execute('SELECT max(batchID) from sandbox.telephonyQueueMembers')[0][0]
+        # except:
+        #     continue
 
         max_batch_id_clickhouse = int(max_batch_id_clickhouse if max_batch_id_clickhouse != None else 0)
 
@@ -199,28 +199,24 @@ def queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret
 
 
 def main():
-    # db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
-    # ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
-    #
-    # cfg = ConfigParser()
-    # cfg.read(db_config_path)
-    #
-    # ch_host = cfg.get("dwh_clickhouse", "host")
-    # ch_user = cfg.get("dwh_clickhouse", "user")
-    # ch_password = cfg.get("dwh_clickhouse", "password")
-    #
-    # clickhouse_client = Client(ch_host, user=ch_user, password=ch_password, database='sandbox')
+    db_config_path = os.environ['ETL_CONFIG_DIR'] + 'db.ini'
+    ami_config_path = os.environ['ETL_CONFIG_DIR'] + 'asterisk-ami.ini'
 
-    # cfg.read(ami_config_path)
-    # ami_host = cfg.get("asterisk-ami", "host")
-    # ami_port = cfg.get("asterisk-ami", "port")
-    # ami_username = cfg.get("asterisk-ami", "username")
-    # ami_secret = cfg.get("asterisk-ami", "secret")
-    clickhouse_client = Client('172.30.200.27', user='EgorFokin', password='1zNYUd@MjC!N', database='sandbox')
-    ami_host = '172.16.130.2'
-    ami_port = '5038'
-    ami_username = 'for_outsource'
-    ami_secret = 'L0f8AbJ01853d4ef03b83577c35bedZo'
+    cfg = ConfigParser()
+    cfg.read(db_config_path)
+
+    ch_host = cfg.get("dwh_clickhouse", "host")
+    ch_user = cfg.get("dwh_clickhouse", "user")
+    ch_password = cfg.get("dwh_clickhouse", "password")
+
+    clickhouse_client = Client(ch_host, user=ch_user, password=ch_password, database='sandbox')
+
+    cfg.read(ami_config_path)
+    ami_host = cfg.get("asterisk-ami", "host")
+    ami_port = cfg.get("asterisk-ami", "port")
+    ami_username = cfg.get("asterisk-ami", "username")
+    ami_secret = cfg.get("asterisk-ami", "secret")
+
     queue_status(clickhouse_client, ami_host, ami_port, ami_username, ami_secret)
 
 
