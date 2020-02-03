@@ -33,10 +33,18 @@ def date(data):
     if len(data) == 3 and data[0] + data[1] + data[2] < 10000:
         if 0 <= datetime.now().year % 100 - data[0] <= 1 or data[0] >= 1000:
             year = data[0]
-            (day, month) = (max(data[1], data[2]), min(data[1], data[2]))
+            if data[2] >12:
+                month,day = data[1],data[2]
+            else:
+                month, day = data[2], data[1]
+
         elif 0 <= datetime.now().year % 100 - data[2] <= 1 or data[2] >= 1000:
             year = data[2]
-            (day, month) = (max(data[0], data[1]), min(data[0], data[1]))
+            if data[1] > 12:
+                month, day = data[0], data[1]
+            else:
+                month, day = data[1], data[0]
+
         else:
             raise Exception('wrong format')
         return '%s-%s-%s' % (day, month, year)
@@ -101,4 +109,3 @@ def dataCleaner(data, type_key):
         return gln(data)
     elif type_key == 7:
         return phone(data)
-print(dataCleaner(input(),5))
