@@ -42,18 +42,18 @@ def UZD_to_Clickhouse():
         RowsFromFile.append(row)
         counter+=1
         if counter == 5:
-            # clickhouse_client.execute(
-            #     'INSERT INTO sandbox.datavault_raw_test (batchID,intTransID,intFromTransID,intExiteDocID,varTransDatetime,varDocExchangeGUID,varTransGUID,varDocGUID,varSenderGUID,varRecipientGUID,varSosGUID,varTransType,varDocType,intTransState ) VALUES',
-            #     RowsFromFile)
+            clickhouse_client.execute(
+                'INSERT INTO sandbox.datavault_raw_test (batchID,intTransID,intFromTransID,intExiteDocID,varTransDatetime,varDocExchangeGUID,varTransGUID,varDocGUID,varSenderGUID,varRecipientGUID,varSosGUID,varTransType,varDocType,intTransState ) VALUES',
+                RowsFromFile)
             with open('last_batch.txt', 'w') as last_batch:
                 last_batch.write('Last TransID was:' + str(RowsFromFile[-1]['intTransID']))
             batchID+=1
             RowsFromFile = []
             counter = 0
     if counter != 0:
-        # clickhouse_client.execute(
-        #     'INSERT INTO sandbox.datavault_raw_test (batchID,intTransID,intFromTransID,intExiteDocID,varTransDatetime,varDocExchangeGUID,varTransGUID,varDocGUID,varSenderGUID,varRecipientGUID,varSosGUID,varTransType,varDocType,intTransState ) VALUES',
-        #     RowsFromFile)
+        clickhouse_client.execute(
+            'INSERT INTO sandbox.datavault_raw_test (batchID,intTransID,intFromTransID,intExiteDocID,varTransDatetime,varDocExchangeGUID,varTransGUID,varDocGUID,varSenderGUID,varRecipientGUID,varSosGUID,varTransType,varDocType,intTransState ) VALUES',
+            RowsFromFile)
         with open('last_batch.txt', 'w') as last_batch:
             last_batch.write('last TransID was:' + str(RowsFromFile[-1]['intTransID']))
 
