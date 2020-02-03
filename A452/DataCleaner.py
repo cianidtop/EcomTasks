@@ -29,16 +29,16 @@ def date(data):
     day = None
     month = None
     year = None
-    if len(re.findall('\d+', data)) == 3:
-        for i in sorted(list(map(int, re.findall('\d+', data))), reverse=True):
-            if i >= 10000:
-                raise Exception('wrong format')
-            elif year is None and 0 <= datetime.now().year % 100 - i <= 2 or i >= 1000:
-                year = i
-            elif day is None:
-                day = i
-            else:
-                month = i
+    data = list(map(int, re.findall('\d+', data)))
+    if len(data) == 3 and data[0] + data[1] + data[2] < 10000:
+        if 0 <= datetime.now().year % 100 - data[0] <= 1 or data[0] >= 1000:
+            year = data[0]
+            (day, month) = (max(data[1], data[2]), min(data[1], data[2]))
+        elif 0 <= datetime.now().year % 100 - data[2] <= 1 or data[2] >= 1000:
+            year = data[2]
+            (day, month) = (max(data[0], data[1]), min(data[0], data[1]))
+        else:
+            raise Exception('wrong format')
         return '%s-%s-%s' % (day, month, year)
     else:
         raise Exception('wrong format')
@@ -60,7 +60,11 @@ def date_time(data):
             b = False
     if b:
         first = 'time'
-    stDate = date(' '.join(list(map(str,data[:3]))) if first == 'date' else ' '.join(list(map(str,data[-3:]))) )
+    try:
+        stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
+    except:
+        first = 'time' if first == 'date' else 'date'
+        stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
     if len(data) == 6:
         stTime = '%s:%s:%s' % tuple(data[3:] if first == 'date' else data[:-3])
     else:
@@ -97,5 +101,4 @@ def dataCleaner(data, type_key):
         return gln(data)
     elif type_key == 7:
         return phone(data)
-
-
+print(dataCleaner(input(),5))
