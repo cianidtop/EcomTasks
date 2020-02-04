@@ -30,17 +30,21 @@ def date(data):
     month = None
     year = None
     data = list(map(int, re.findall('\d+', data)))
-    if len(data) == 3 and data[0] + data[1] + data[2] < 10000:
+    if len(data) == 3 and data[0] + data[1] + data[2] < 10000 :
         if 0 <= datetime.now().year % 100 - data[0] <= 1 or data[0] >= 1000:
             year = data[0]
-            if data[2] >12:
-                month,day = data[1],data[2]
+            if data[2] > 12:
+                if data[1] >12:
+                    raise Exception('wrong format')
+                month, day = data[1], data[2]
             else:
                 month, day = data[2], data[1]
 
         elif 0 <= datetime.now().year % 100 - data[2] <= 1 or data[2] >= 1000:
             year = data[2]
             if data[1] > 12:
+                if data[0] > 12:
+                    raise Exception('wrong format')
                 month, day = data[0], data[1]
             else:
                 month, day = data[1], data[0]
@@ -57,16 +61,19 @@ def date_time(data):
     if ':' in data[:len(data) // 2]:
         first = 'time'
     data = list(map(int, re.findall(r'\d+', data)))
-    try:
-        stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
-    except:
-        first = 'time' if first == 'date' else 'date'
-        stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
-    if len(data) == 6:
-        stTime = '%s:%s:%s' % tuple(data[3:] if first == 'date' else data[:-3])
+    if 5<=len(data)<=6:
+        try:
+            stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
+        except:
+            first = 'time' if first == 'date' else 'date'
+            stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
+        if len(data) == 6:
+            stTime = '%s:%s:%s' % tuple(data[3:] if first == 'date' else data[:-3])
+        else:
+            stTime = '%s:%s' % tuple(data[3:] if first == 'date' else data[:-3])
+        return stDate + ' ' + stTime if first == 'date' else stTime + ' ' + stDate
     else:
-        stTime = '%s:%s' % tuple(data[3:] if first == 'date' else data[:-3])
-    return stDate + ' ' + stTime if first == 'date' else stTime + ' ' + stDate
+        raise Exception('wrong format')
 
 
 def gln(data):
@@ -98,3 +105,4 @@ def dataCleaner(data, type_key):
         return gln(data)
     elif type_key == 7:
         return phone(data)
+print(dataCleaner(input(),5))
