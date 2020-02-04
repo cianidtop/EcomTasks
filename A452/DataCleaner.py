@@ -57,17 +57,6 @@ def date_time(data):
     if ':' in data[:len(data) // 2]:
         first = 'time'
     data = list(map(int, re.findall(r'\d+', data)))
-    for i in data[-3:]:
-        if i > 1000:
-            first = 'time'
-    b = True
-    for i in data[:3]:
-        if 1000 > i > 31:
-            first = 'time'
-        if i > 1000 or 0 <= datetime.now().year % 100 - i <= 2:
-            b = False
-    if b:
-        first = 'time'
     try:
         stDate = date(' '.join(list(map(str, data[:3]))) if first == 'date' else ' '.join(list(map(str, data[-3:]))))
     except:
